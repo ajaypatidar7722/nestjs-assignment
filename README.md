@@ -1,13 +1,60 @@
-
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+
+## Prerequisites / Dependencies
+
+You must have following on your system before you can start application
+
+- Node.js
+- npm
+- **[Optional]** docker & docker-compose
 
 ## Installation
 
 ```bash
 $ npm install
 ```
+
+## Setting up the database
+
+### Using docker
+
+```bash
+# cd in to the root directory of the repository
+cd nestjs-assignment
+
+# run the compose file
+docker-compose up -d
+```
+
+The compose file starts a PG server and make it accessible on `localhost:5432`.
+
+Additionally, initializes scripts in dir `docker/postgres-init-scripts/docker-entrypoint-initdb.d` to
+
+- Create tables `Cats`, `Users` and `Favorites`
+- Seed some cats into the database
+
+> These scripts will only execute when the postgres-data volume is empty
+
+### Using without docker
+
+To setup the database without docker you need to run the following commands
+
+```bash
+# cd in to the directory with the scripts
+cd ./nestjs-assignment/docker/postgres-init-scripts/docker-entrypoint-initdb.d
+
+# Prepare schema
+psql -U your_username -d your_database_name -f ./01_schema.sql
+
+# Seed cats
+psql -U your_username -d your_database_name -f ./01_seed.sql
+```
+
+Note: **01_schema.sql** is idempotant but **02_seed.sql** is not and running seed twice will throw duplicate primary key error.
+
+> Make sure the postgres database service is running before running above commands.
 
 ## Running the app
 
