@@ -56,6 +56,10 @@ Note: **01_schema.sql** is idempotant but **02_seed.sql** is not and running see
 
 > Make sure the postgres database service is running before running above commands.
 
+## Setting up env variables
+
+Create `.env` in the root of the project and copy content of `.env.example` into it.
+
 ## Running the app
 
 ```bash
