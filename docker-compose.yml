@@ -1,0 +1,18 @@
+version: '3'
+services:
+  db:
+    image: 'postgres:13'
+    environment:
+      - POSTGRES_DB=pet-store
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres123
+
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+      - ./docker/postgres-init-scripts/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+volumes:
+  postgres-data:
