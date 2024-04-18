@@ -33,3 +33,7 @@ VALUES
     ('Princess', 'Havana Brown', 3),
     ('Sam', 'Pixie-Bob', 4),
     ('Sasha', 'Toyger', 1);
+
+INSERT INTO Users (email, password, role)
+VALUES 
+    ('admin@tundrax.xyz', '$2b$10$23uoehjCE0Ht5Pkh4Xe4JOJr6md8U5GuYYWdU5OeO26RE3kc0TNhe', 'admin');
