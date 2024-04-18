@@ -15,11 +15,11 @@ export class ErrorsInterceptor implements NestInterceptor {
     return next
       .handle()
       .pipe(
-        catchError(err =>
+        catchError((err) =>
           throwError(
-            () => new HttpException('New message', HttpStatus.BAD_GATEWAY),
-          ),
-        ),
+            () => new HttpException('New message', HttpStatus.BAD_GATEWAY)
+          )
+        )
       );
   }
 }

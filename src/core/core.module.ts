@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { configurationLoader } from './app-config';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
-import { configurationLoader } from './app-config';
 
 @Module({
   imports: [
@@ -12,24 +13,21 @@ import { configurationLoader } from './app-config';
       isGlobal: true,
       load: [configurationLoader],
     }),
-    TypeOrmModule.forRootAsync({
-      name: 'petStore',
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('db.pg.host'),
-        port: configService.get('db.pg.port'),
-        username: configService.get('db.pg.username'),
-        password: configService.get('db.pg.password'),
-        database: configService.get('db.pg.database'),
-        autoLoadEntities: true,
-        synchronize: false,
-      }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.PG_HOST,
+      port: parseInt(process.env.PG_PORT),
+      database: process.env.PG_DATABASE,
+      username: process.env.PG_USERNAME,
+      password: process.env.PG_PASSWORD,
+      autoLoadEntities: true,
+      synchronize: false,
     }),
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],
 })
 export class CoreModule {}

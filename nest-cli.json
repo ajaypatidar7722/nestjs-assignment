@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "hashing": {
+      "type": "library",
+      "root": "libs/hashing",
+      "entryFile": "index",
+      "sourceRoot": "libs/hashing/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/hashing/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}
