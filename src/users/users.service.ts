@@ -31,4 +31,8 @@ export class UsersService {
       throw new BadRequestException('Invalid email or password');
     }
   }
+
+  async findOne(email: string): Promise<UserEntity> {
+    return this.repository.findOne({ where: { email } });
+  }
 }
