@@ -1,3 +1,4 @@
+import { HashingService } from '@app/hashing';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
@@ -6,16 +7,28 @@ import { UsersService } from '../users/users.service';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private hashingService: HashingService
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(email);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+
+    if (!user) {
+      return null;
     }
-    return null;
+
+    const valid = await this.hashingService.comparePassword(
+      pass,
+      user.password
+    );
+
+    if (!valid) {
+      return null;
+    }
+
+    const { password, ...restUser } = user;
+    return restUser;
   }
 
   async register(email: string, password: string) {
