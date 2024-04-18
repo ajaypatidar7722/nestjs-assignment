@@ -1,9 +1,17 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Roles } from '../decorators/roles.decorator';
+import { ExtendedRequest } from '../interfaces/common.interfaces';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
+  private logger = new Logger(RolesGuard.name);
+
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -11,11 +19,11 @@ export class RolesGuard implements CanActivate {
     if (!roles) {
       return true;
     }
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<ExtendedRequest>();
     const user = request.user;
-    const hasRole = () =>
-      user.roles.some(role => !!roles.find(item => item === role));
+    this.logger.debug(`Validating role for user: ${user.email}`);
+    const hasRole = !!roles.includes(user.role);
 
-    return user && user.roles && hasRole();
+    return hasRole;
   }
 }
