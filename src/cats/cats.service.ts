@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CatEntity } from '../common/entities/cat.entity';
@@ -12,10 +12,19 @@ export class CatsService {
     private repository: Repository<CatEntity>
   ) {}
 
-  private readonly cats: Cat[] = [];
-
   create(cat: Cat) {
-    this.cats.push(cat);
+    const entity = this.repository.create(cat);
+
+    return this.repository.save(entity);
+  }
+
+  async update(id: number, cat: Cat) {
+    const result = await this.repository.update({ id }, cat);
+    if (result.affected === 0) {
+      throw new BadRequestException('cat not found');
+    }
+
+    return this.repository.findOneBy({ id });
   }
 
   async findById(id: number): Promise<Cat> {

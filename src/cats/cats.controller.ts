@@ -7,6 +7,7 @@ import {
   Logger,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -16,6 +17,7 @@ import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
 import { UserRole } from '../users/interfaces/users.interface';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
+import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
@@ -27,8 +29,31 @@ export class CatsController {
   @Post()
   @Roles([UserRole.ADMIN])
   async create(@Body() createCatDto: CreateCatDto) {
-    console.log(createCatDto);
-    this.catsService.create(createCatDto);
+    this.logger.debug(
+      `Creating cat with payload: ${JSON.stringify(createCatDto)}`
+    );
+
+    return this.catsService.create(createCatDto);
+  }
+
+  @Put(':id')
+  @Roles([UserRole.ADMIN])
+  async update(
+    @Param('id', new ParseIntPipe())
+    id: number,
+    @Body() updateCatDto: UpdateCatDto
+  ) {
+    this.logger.debug(`Updating cat with id: ${id}`);
+
+    if (!id) {
+      throw new BadRequestException('id must be a number');
+    }
+
+    if (!Object.keys(updateCatDto).length) {
+      throw new BadRequestException('request object must be provided');
+    }
+
+    return this.catsService.update(id, updateCatDto);
   }
 
   @Public()
