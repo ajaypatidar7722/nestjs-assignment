@@ -18,6 +18,10 @@ export class CatsService {
     this.cats.push(cat);
   }
 
+  async findById(id: number): Promise<Cat> {
+    return this.repository.findOneByOrFail({ id });
+  }
+
   /**
    * This should come from the cache for improved performance
    */

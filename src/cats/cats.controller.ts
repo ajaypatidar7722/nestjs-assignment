@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   DefaultValuePipe,
@@ -42,11 +43,17 @@ export class CatsController {
     return this.catsService.findAllPaginated(cursor, limit);
   }
 
+  @Public()
   @Get(':id')
-  findOne(
+  async findOne(
     @Param('id', new ParseIntPipe())
     id: number
-  ) {
-    // get by ID logic
+  ): Promise<Cat> {
+    if (!id) {
+      throw new BadRequestException('id must be a number');
+    }
+
+    this.logger.debug(`Retrieving cat with id: ${id}`);
+    return this.catsService.findById(id);
   }
 }
