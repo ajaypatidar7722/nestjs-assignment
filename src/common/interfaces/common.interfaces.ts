@@ -19,3 +19,10 @@ export interface ExtendedRequest extends Request {
 export interface ExtendedLoginRequest extends Request {
   user: JwtPayload;
 }
+
+export interface CursorPaginatedResult<T> {
+  items: T[];
+  nextCursor: number;
+  hasNext: boolean;
+  total: number;
+}
