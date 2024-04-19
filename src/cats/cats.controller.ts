@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Logger,
   Param,
@@ -45,15 +46,23 @@ export class CatsController {
   ) {
     this.logger.debug(`Updating cat with id: ${id}`);
 
-    if (!id) {
-      throw new BadRequestException('id must be a number');
-    }
-
+    // additional validation since all the fields in the dto are optional
     if (!Object.keys(updateCatDto).length) {
       throw new BadRequestException('request object must be provided');
     }
 
     return this.catsService.update(id, updateCatDto);
+  }
+
+  @Delete(':id')
+  @Roles([UserRole.ADMIN])
+  async delete(
+    @Param('id', new ParseIntPipe())
+    id: number
+  ) {
+    this.logger.debug(`Deleting cat with id: ${id}`);
+
+    return this.catsService.delete(id);
   }
 
   @Public()
@@ -74,10 +83,6 @@ export class CatsController {
     @Param('id', new ParseIntPipe())
     id: number
   ): Promise<Cat> {
-    if (!id) {
-      throw new BadRequestException('id must be a number');
-    }
-
     this.logger.debug(`Retrieving cat with id: ${id}`);
     return this.catsService.findById(id);
   }
