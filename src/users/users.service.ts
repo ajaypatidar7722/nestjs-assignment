@@ -32,7 +32,7 @@ export class UsersService {
     }
   }
 
-  async findOne(email: string): Promise<UserEntity> {
+  async findByEmail(email: string): Promise<UserEntity> {
     return this.repository.findOne({ where: { email } });
   }
 }
