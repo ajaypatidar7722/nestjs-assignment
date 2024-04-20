@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserRole } from '../../users/interfaces/users.interface';
+import { CatEntity } from './cat.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -18,4 +25,8 @@ export class UserEntity {
     default: UserRole.USER,
   })
   role: UserRole;
+
+  @ManyToMany(() => CatEntity)
+  @JoinTable()
+  favorites: CatEntity[];
 }

@@ -5,22 +5,22 @@ BEGIN
     END IF;
 END $$;
 
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role UserRole NOT NULL
+    role UserRole NOT NULL DEFAULT 'user'::UserRole
 );
 
-CREATE TABLE IF NOT EXISTS Cats (
+CREATE TABLE IF NOT EXISTS cats (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     breed VARCHAR(255) NOT NULL,
     age INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Favorites (
-    user_id INTEGER REFERENCES Users(id),
-    cat_id INTEGER REFERENCES Cats(id),
-    PRIMARY KEY (user_id, cat_id)
+CREATE TABLE IF NOT EXISTS users_favorites_cats (
+    "usersId" INTEGER REFERENCES users(id),
+    "catsId" INTEGER REFERENCES cats(id),
+    PRIMARY KEY ("usersId", "catsId")
 );

@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CatEntity } from '../common/entities/cat.entity';
+import { UserEntity } from '../common/entities/user.entity';
 import { CursorPaginatedResult } from '../common/interfaces/common.interfaces';
 import { Cat } from './interfaces/cat.interface';
 
@@ -9,7 +14,9 @@ import { Cat } from './interfaces/cat.interface';
 export class CatsService {
   constructor(
     @InjectRepository(CatEntity)
-    private repository: Repository<CatEntity>
+    private repository: Repository<CatEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>
   ) {}
 
   create(cat: Cat) {
@@ -27,6 +34,41 @@ export class CatsService {
     return this.repository.findOneBy({ id });
   }
 
+  async markCatAsFavorite(currentUser: UserEntity, catId: number) {
+    const cat = await this.findById(catId);
+
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: currentUser.id },
+      relations: { favorites: true },
+    });
+
+    if (user.favorites.find((favoriteCat) => favoriteCat.id === catId)) {
+      throw new BadRequestException('cat already marked as favorite');
+    }
+    user.favorites = [...(user.favorites || []), cat];
+
+    return this.userRepository.save(user);
+  }
+
+  async markCatAsUnfavorite(currentUser: UserEntity, catId: number) {
+    // validate cat's existense
+    await this.findById(catId);
+
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: currentUser.id },
+      relations: { favorites: true },
+    });
+
+    if (!user.favorites.find((favoriteCat) => favoriteCat.id === catId)) {
+      throw new BadRequestException('cat is not yet marked as favorite');
+    } else {
+      user.favorites = user.favorites.filter(
+        (favoriteCat) => favoriteCat.id !== catId
+      );
+      return this.userRepository.save(user);
+    }
+  }
+
   async delete(id: number) {
     const result = await this.repository.delete({ id });
     if (result.affected === 0) {
@@ -34,7 +76,7 @@ export class CatsService {
     }
   }
 
-  async findById(id: number): Promise<Cat> {
+  async findById(id: number): Promise<CatEntity> {
     return this.repository.findOneByOrFail({ id });
   }
 
