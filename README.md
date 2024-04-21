@@ -103,7 +103,7 @@ $ npm run test:cov
 
 ## Things to improve but not part of this submission
 
-Due to shortage of time this submission does not include the followings:
+I wanted to include some more features but due to shortage of time this submission does not include the followings:
 
 - **id -> uuid:** Serial ID for records are easily predictable and should be replaced by uuid.
 - **No migrations:** Database is initialized using init scripts supported by docker. There is not a solution to handle upcoming migration
