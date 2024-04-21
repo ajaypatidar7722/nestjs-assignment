@@ -97,4 +97,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## Things not part of this submission
 
 - **id -> uuid:** Serial ID for records are easily predictable and should be replaced by uuid.
-- **No migrations:** Database is initialized using init scripts supported by docker. There is not a solution to handle upcoming migration,
+- **No migrations:** Database is initialized using init scripts supported by docker. There is not a solution to handle upcoming migration
+- **Favorite cats in repsopnse to GET /cats API:** It makes a lot of sense to add a key `favorite` with each cat in the list. Most morden designs have a ❤️ icon with each item that can be added to favorite.
+
+# APIs
+
+All APIs are document in [API](./API.md) file.
