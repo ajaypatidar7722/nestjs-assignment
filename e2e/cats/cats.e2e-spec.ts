@@ -6,7 +6,20 @@ import { CatsService } from '../../src/cats/cats.service';
 import { CoreModule } from '../../src/core/core.module';
 
 describe('Cats', () => {
-  const catsService = { findAll: () => ['test'] };
+  const catsService = {
+    findAllPaginated: () => ({
+      items: [{ id: 1, name: 'Fluffy', breed: 'Maine Coon', age: 2 }],
+      hasNext: true,
+      nextCursor: 1,
+      total: 1,
+    }),
+    findById: (id: number) => ({
+      id,
+      name: 'Fluffy',
+      breed: 'Maine Coon',
+      age: 2,
+    }),
+  };
 
   let app: INestApplication;
 
@@ -24,8 +37,19 @@ describe('Cats', () => {
 
   it(`/GET cats`, () => {
     return request(app.getHttpServer()).get('/cats').expect(200).expect({
-      data: catsService.findAll(),
+      data: catsService.findAllPaginated(),
+      statusCode: 200,
     });
+  });
+
+  it(`/GET:id cats by an id`, () => {
+    return request(app.getHttpServer())
+      .get('/cats/5')
+      .expect(200)
+      .expect({
+        data: catsService.findById(5),
+        statusCode: 200,
+      });
   });
 
   afterAll(async () => {
