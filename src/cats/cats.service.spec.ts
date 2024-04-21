@@ -92,6 +92,24 @@ describe('CatsService', () => {
       });
     });
 
+    it("should successfully mark a cat as favorite if user don't have a favorite entry previously", async () => {
+      const cat = { id: 1, name: 'TestCat', breed: 'TestBreed', age: 3 };
+      const user = { id: 1, favorites: null };
+
+      catRepository.findOneByOrFail = jest.fn().mockResolvedValue(cat);
+      userRepository.findOneOrFail = jest.fn().mockResolvedValue(user);
+      userRepository.save = jest
+        .fn()
+        .mockResolvedValue({ ...user, favorites: [cat] });
+
+      await service.markCatAsFavorite(user as UserEntity, cat.id);
+
+      expect(userRepository.save).toHaveBeenCalledWith({
+        ...user,
+        favorites: [cat],
+      });
+    });
+
     it('should throw BadRequestException if cat is already a favorite', async () => {
       const cat = { id: 1, name: 'TestCat', breed: 'TestBreed', age: 3 };
       const user = { id: 1, favorites: [{ id: cat.id }] };
@@ -101,6 +119,38 @@ describe('CatsService', () => {
 
       await expect(
         service.markCatAsFavorite(user as UserEntity, cat.id)
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('markCatAsUnfavorite', () => {
+    it('should successfully mark a cat as unfavorite', async () => {
+      const catId = 1;
+      const user = { id: 1, favorites: [{ id: catId }] };
+
+      catRepository.findOneByOrFail = jest.fn().mockResolvedValue(null);
+      userRepository.findOneOrFail = jest.fn().mockResolvedValue(user);
+      userRepository.save = jest
+        .fn()
+        .mockResolvedValue({ ...user, favorites: [] });
+
+      await service.markCatAsUnfavorite(user as UserEntity, catId);
+
+      expect(userRepository.save).toHaveBeenCalledWith({
+        ...user,
+        favorites: [],
+      });
+    });
+
+    it('should throw BadRequestException if cat is not yet marked as favorite', async () => {
+      const catId = 1;
+      const user = { id: 1, favorites: [] };
+
+      catRepository.findOneByOrFail = jest.fn().mockResolvedValue({ id: 1 });
+      userRepository.findOneOrFail = jest.fn().mockResolvedValue(user);
+
+      await expect(
+        service.markCatAsUnfavorite(user as UserEntity, catId)
       ).rejects.toThrow(BadRequestException);
     });
   });

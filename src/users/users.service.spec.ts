@@ -74,6 +74,22 @@ describe('UsersService', () => {
         BadRequestException
       );
     });
+
+    it('should throw a BadRequestException user repository query fails to save user', async () => {
+      const email = 'test@example.com';
+      const password = 'password123';
+
+      mockHashingService.hashPassword = jest
+        .fn()
+        .mockReturnValue('hashedPassword');
+      mockRepository.save = jest.fn().mockImplementation(() => {
+        throw new BadRequestException('Invalid email or password');
+      });
+
+      await expect(service.register(email, password)).rejects.toThrowError(
+        BadRequestException
+      );
+    });
   });
 
   describe('findByEmail', () => {

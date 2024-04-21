@@ -79,7 +79,10 @@ export class CatsController {
     this.logger.debug(
       `Retrieving cats with cursor: ${cursor} and limit: ${limit}`
     );
-    return this.catsService.findAllPaginated(cursor, limit);
+    console.log('00000', cursor, limit);
+    const cats = await this.catsService.findAllPaginated(cursor, limit);
+    console.log('===cats======', cats);
+    return cats;
   }
 
   @Public()

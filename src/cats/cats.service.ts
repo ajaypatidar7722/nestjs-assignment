@@ -42,10 +42,15 @@ export class CatsService {
       relations: { favorites: true },
     });
 
-    if (user.favorites.find((favoriteCat) => favoriteCat.id === catId)) {
+    const favorites = user.favorites || [];
+
+    if (
+      favorites.length &&
+      favorites.find((favoriteCat) => favoriteCat.id === catId)
+    ) {
       throw new BadRequestException('cat already marked as favorite');
     }
-    user.favorites = [...(user.favorites || []), cat];
+    user.favorites = [...favorites, cat];
 
     return this.userRepository.save(user);
   }
