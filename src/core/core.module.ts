@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { ErrorsInterceptor } from '../common/interceptors/exception.interceptor';
 import { TimeoutInterceptor } from '../common/interceptors/timeout.interceptor';
 import { configurationLoader } from './app-config';
